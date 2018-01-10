@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="OFF">
+    <properties>
+        <property name="LOG_HOME">/opt/web/logs</property>
+    </properties>
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+
+        <!--
+        <File name="simple" fileName="logs/test.log" >
+          <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </File>
+        -->
+
+        <RollingRandomAccessFile name="log" fileName="${LOG_HOME}/trace.log" filePattern="${LOG_HOME}/trace.%d{yyyy-MM-dd-HH}.log">
+            <PatternLayout pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+        </RollingRandomAccessFile>
+
+    </appenders>
+    <loggers>
+        <root level="trace">
+            <appender-ref ref="log" />
+            <appender-ref ref="Console"/>
+        </root>
+    </loggers>
+</configuration>

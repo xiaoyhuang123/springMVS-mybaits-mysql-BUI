@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ft.backend.work.dao.WorkshopMapper">
+
+    <resultMap id="BaseResultMap" type="com.ft.backend.work.model.Workshop">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="workshop_name" jdbcType="VARCHAR" property="workshopName" />
+        <result column="workshop_brief_introduction" jdbcType="VARCHAR" property="workshopBriefIntroduction" />
+        <result column="workshop_remarks" jdbcType="VARCHAR" property="workshopRemarks" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id as id,
+        workshop_name as workshopName,
+        workshop_brief_introduction as workshopBriefIntroduction,
+        workshop_remarks as workshopRemarks,
+        create_time as createTime
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.ft.backend.work.model.Workshop">
+        <![CDATA[
+        insert into tb_workshop (workshop_name, workshop_brief_introduction,
+        workshop_remarks, create_time)
+        values ( #{workshopName,jdbcType=VARCHAR}, #{workshopBriefIntroduction,jdbcType=VARCHAR},
+        #{workshopRemarks,jdbcType=VARCHAR}, now())
+            ]]>
+    </insert>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from tb_workshop
+        where id = #{id}
+    </delete>
+
+    <update id="updateWorkshop" parameterType="com.ft.backend.work.model.Workshop">
+        update tb_workshop
+        <set>
+            <if test="workshopName != null">
+                <![CDATA[ workshop_name = #{workshopName},]]>
+            </if>
+            <if test="workshopBriefIntroduction != null">
+                <![CDATA[ workshop_brief_introduction = #{workshopBriefIntroduction},]]>
+            </if>
+            <if test="workshopRemarks != null">
+                <![CDATA[ workshop_remarks = #{workshopRemarks},]]>
+            </if>
+            <if test="createTime !=null and 1 == 1">
+                <![CDATA[ create_time = now(),]]>
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="selectById" parameterType="java.lang.Long"
+            resultType="com.ft.backend.work.model.Workshop">
+        select <include refid="Base_Column_List" />
+        from tb_workshop
+        where id = #{id}
+    </select>
+
+    <select id="selectByCondition" parameterType="com.ft.backend.work.client.QueryCondition.WorkshopQueryCondition" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from tb_workshop
+        <include refid="QUERY_WHERE_PART_CLAUSE"/>
+        <if test="orderColumn != null and orderType != null"><![CDATA[  ORDER BY ${orderColumn}  ${orderType} ]]></if>
+        <if test="orderColumn == null or orderColumn=='' or orderType==null or orderType=='' "> ORDER BY create_time DESC
+        </if>
+        <include refid="QUERY_LIMIT_CONDITION"/>
+    </select>
+
+    <!-- 查询总条数 -->
+    <select id="countByCondition" parameterType="com.ft.backend.work.client.QueryCondition.WorkshopQueryCondition" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        from tb_workshop
+        <include refid="QUERY_WHERE_PART_CLAUSE"/>
+    </select>
+
+    <!-- 分页 -->
+    <sql id="QUERY_LIMIT_CONDITION">
+        <if test="pageIndex != null and pageIndex &gt; 0 and pageSize != null and pageSize &gt; 0">LIMIT #{offset}, #{pageSize}</if>
+    </sql>
+    <!-- 查询条件 -->
+    <sql id="QUERY_WHERE_PART_CLAUSE">
+        <where>
+            <if test="workshopName !='' and workshopName != null "><![CDATA[AND workshop_name like CONCAT('%',#{workshopName},'%' )]]>
+            </if>
+        </where>
+    </sql>
+</mapper>
